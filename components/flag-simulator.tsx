@@ -87,9 +87,6 @@ export function FlagSimulator() {
           </div>
           <div>
             <h1 className="text-base font-semibold text-foreground">FlagWaver</h1>
-            <p className="text-xs text-muted-foreground hidden sm:block">
-              Realistic cloth physics simulation
-            </p>
           </div>
         </div>
         
