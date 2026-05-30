@@ -257,17 +257,20 @@ export function FlagScene({
               <ClothMesh
                 params={(() => {
                   const extraPoles: { x: number; z: number; radius: number }[] = []
+                  const scaledPoleRadius = params.poleRadius * primaryScale
                   if (isSecondPoleEnabled) {
-                    extraPoles.push({ x: 0, z: -secondPoleDistance, radius: params.poleRadius })
+                    extraPoles.push({ x: 0, z: -secondPoleDistance, radius: scaledPoleRadius })
                   }
                   if (showThirdPole) {
-                    extraPoles.push({ x: 0, z: thirdPoleZ, radius: params.poleRadius })
+                    extraPoles.push({ x: 0, z: thirdPoleZ, radius: scaledPoleRadius })
                   }
                   return extraPoles.length > 0
                     ? {
                         ...params,
                         width: params.width * primaryScale,
                         height: primaryClothH,
+                        poleRadius: scaledPoleRadius,
+                        selfCollisionDistance: params.selfCollisionDistance * primaryScale,
                         fullHeight: params.height,
                         worldYOffset: primaryGroupY,
                         extraPoles
@@ -276,6 +279,8 @@ export function FlagScene({
                         ...params,
                         width: params.width * primaryScale,
                         height: primaryClothH,
+                        poleRadius: scaledPoleRadius,
+                        selfCollisionDistance: params.selfCollisionDistance * primaryScale,
                         fullHeight: params.height,
                         worldYOffset: primaryGroupY
                       }
@@ -294,13 +299,14 @@ export function FlagScene({
           const baseSecondaryWidth = secondaryWidth != null && secondaryWidth !== params.width
             ? secondaryWidth
             : params.width
+          const scaledPoleRadiusSecondary = params.poleRadius * secondaryScale
           const extraPoles: { x: number; z: number; radius: number }[] = [
             // primary pole, in this group's local frame
-            { x: 0, z: secondPoleDistance, radius: params.poleRadius }
+            { x: 0, z: secondPoleDistance, radius: scaledPoleRadiusSecondary }
           ]
           if (showThirdPole) {
             // third pole at world z = thirdPoleZ; relative to this group at -secondPoleDistance
-            extraPoles.push({ x: 0, z: thirdPoleZ + secondPoleDistance, radius: params.poleRadius })
+            extraPoles.push({ x: 0, z: thirdPoleZ + secondPoleDistance, radius: scaledPoleRadiusSecondary })
           }
           return (
             <group position={[0, 0, -secondPoleDistance]}>
@@ -311,6 +317,8 @@ export function FlagScene({
                       ...params,
                       width: baseSecondaryWidth * secondaryScale,
                       height: secondaryClothH,
+                      poleRadius: scaledPoleRadiusSecondary,
+                      selfCollisionDistance: params.selfCollisionDistance * secondaryScale,
                       fullHeight: params.height,
                       worldYOffset: secondaryGroupY,
                       extraPoles
@@ -331,12 +339,13 @@ export function FlagScene({
           const baseTertiaryWidth = tertiaryWidth != null && tertiaryWidth !== params.width
             ? tertiaryWidth
             : params.width
+          const scaledPoleRadiusTertiary = params.poleRadius * tertiaryScale
           // Relative to this group at world z = thirdPoleZ
           const extraPoles: { x: number; z: number; radius: number }[] = [
             // primary pole at world z = 0 → local z = -thirdPoleZ
-            { x: 0, z: -thirdPoleZ, radius: params.poleRadius },
+            { x: 0, z: -thirdPoleZ, radius: scaledPoleRadiusTertiary },
             // secondary pole at world z = -secondPoleDistance → local z = -secondPoleDistance - thirdPoleZ
-            { x: 0, z: -secondPoleDistance - thirdPoleZ, radius: params.poleRadius }
+            { x: 0, z: -secondPoleDistance - thirdPoleZ, radius: scaledPoleRadiusTertiary }
           ]
           return (
             <group position={[0, 0, thirdPoleZ]}>
@@ -347,6 +356,8 @@ export function FlagScene({
                       ...params,
                       width: baseTertiaryWidth * tertiaryScale,
                       height: tertiaryClothH,
+                      poleRadius: scaledPoleRadiusTertiary,
+                      selfCollisionDistance: params.selfCollisionDistance * tertiaryScale,
                       fullHeight: params.height,
                       worldYOffset: tertiaryGroupY,
                       extraPoles

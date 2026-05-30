@@ -38,6 +38,7 @@ import { ImageUpload } from './image-upload'
 import { SliderControl } from './slider-control'
 import { ClothParams, CLOTH_PRESETS, ClothPreset, FlagPosition } from '@/lib/cloth-simulation'
 import { ProcessedImage } from '@/lib/image-utils'
+import packageJson from '../package.json'
 
 interface ControlPanelProps {
   params: ClothParams
@@ -612,7 +613,7 @@ export function ControlPanel({
 
       <div className="px-4 py-3 border-t border-border">
         <p className="text-xs text-muted-foreground text-center">
-          Position-Based Dynamics Cloth Simulation
+          FlagWaver v{packageJson.version}
         </p>
       </div>
     </div>
