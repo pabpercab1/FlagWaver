@@ -200,8 +200,8 @@ export function ControlPanel({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0 overflow-hidden pr-4">
-        <div className="space-y-6 border-r border-border pl-4 pt-4 pb-4">
+      <ScrollArea className="flex-1 min-h-0 overflow-hidden">
+        <div className="space-y-6 p-4">
           <div className="flex gap-2">
             <Button
               variant={isPaused ? 'default' : 'secondary'}
