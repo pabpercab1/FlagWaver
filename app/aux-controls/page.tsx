@@ -20,6 +20,9 @@ export default function AuxControlsPage() {
   const [secondaryFlagPosition, setSecondaryFlagPosition] = useState<FlagPosition>('raised')
   const [tertiaryFlagPosition, setTertiaryFlagPosition] = useState<FlagPosition>('raised')
   const [raiseDuration, setRaiseDuration] = useState(2)
+  const [textureUrl, setTextureUrl] = useState<string | null>(null)
+  const [secondTextureUrl, setSecondTextureUrl] = useState<string | null>(null)
+  const [thirdTextureUrl, setThirdTextureUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return
@@ -30,7 +33,7 @@ export default function AuxControlsPage() {
       const msg = ev.data
       if (!msg || typeof msg !== 'object') return
 
-      if (msg.type === 'state' && msg.payload) {
+        if (msg.type === 'state' && msg.payload) {
         // version check
         if (typeof msg.version === 'number' && msg.version <= versionRef.current) return
         if (typeof msg.version === 'number') versionRef.current = msg.version
@@ -47,6 +50,9 @@ export default function AuxControlsPage() {
         if (s.secondaryFlagPosition) setSecondaryFlagPosition(s.secondaryFlagPosition)
         if (s.tertiaryFlagPosition) setTertiaryFlagPosition(s.tertiaryFlagPosition)
         if (typeof s.raiseDuration === 'number') setRaiseDuration(s.raiseDuration)
+          if (typeof s.textureUrl === 'string') setTextureUrl(s.textureUrl)
+          if (typeof s.secondTextureUrl === 'string') setSecondTextureUrl(s.secondTextureUrl)
+          if (typeof s.thirdTextureUrl === 'string') setThirdTextureUrl(s.thirdTextureUrl)
         setReady(true)
       }
     }
@@ -133,11 +139,11 @@ export default function AuxControlsPage() {
             isPaused={isPaused}
             onPauseToggle={handlePauseToggle}
             onReset={handleReset}
-            currentImage={null}
+            currentImage={textureUrl}
             onImageChange={handlePrimaryImageChange}
-            secondImage={null}
+            secondImage={secondTextureUrl}
             onSecondImageChange={handleSecondImageChangeLocal}
-            thirdImage={null}
+            thirdImage={thirdTextureUrl}
             onThirdImageChange={handleThirdImageChangeLocal}
             selectedPreset={null}
             onPresetSelect={() => {}}

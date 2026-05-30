@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { Upload, X, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { SliderControl } from './slider-control'
+import { Input } from '@/components/ui/input'
 import { validateImageFile, processImage, ProcessedImage } from '@/lib/image-utils'
 
 interface ImageUploadProps {
@@ -86,48 +86,56 @@ export function ImageUpload({ label = 'Flag Image', currentImage, onImageChange,
     }
   }, [onImageChange])
 
+  const [customSizeInput, setCustomSizeInput] = useState('')
+
+  const applyCustomSize = useCallback(() => {
+    const parsed = parseFloat(customSizeInput)
+    if (isNaN(parsed)) return
+    const clamped = Math.max(10, Math.min(200, parsed))
+    onScaleChange?.(clamped / 100)
+    setCustomSizeInput('')
+  }, [customSizeInput, onScaleChange])
+
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium text-foreground">{label}</label>
       
       {currentImage ? (
-        <div className="flex items-start gap-3">
-          <div className="flex-1 min-w-0 rounded-full border border-border bg-muted/40 px-2 py-2">
-            <div className="flex items-center gap-2">
-              <div className="h-10 w-10 shrink-0 rounded-full overflow-hidden border border-border bg-muted">
-                <img
-                  src={currentImage}
-                  alt={`${label} preview`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-foreground truncate">{label}</p>
-                <p className="text-[11px] text-muted-foreground truncate">Image selected</p>
-              </div>
+        <div className="w-full">
+          <div className="flex items-center gap-4 p-3 rounded-lg border border-border bg-muted/40">
+            <div className="flex-shrink-0 w-20 h-12 rounded-md overflow-hidden border border-border bg-muted">
+              <img src={currentImage} alt={`${label} preview`} className="w-full h-full object-cover" />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="px-3"
-              onClick={triggerFilePicker}
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Processing...' : 'Replace'}
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="px-3"
-              onClick={handleClear}
-              disabled={isProcessing}
-            >
-              <X className="h-4 w-4 mr-1" />
-              Delete
-            </Button>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-foreground truncate">{label}</p>
+              <p className="text-xs text-muted-foreground mt-1 truncate">Image selected</p>
+              {scale != null && (
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="text-xs text-muted-foreground">Size</div>
+                  <div className="text-xs font-medium">{Math.round(scale * 100)}%</div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={triggerFilePicker}
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Processing...' : 'Replace'}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleClear}
+                disabled={isProcessing}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       ) : (
@@ -179,15 +187,42 @@ export function ImageUpload({ label = 'Flag Image', currentImage, onImageChange,
       )}
 
       {scale != null && onScaleChange && (
-        <SliderControl
-          label="Size"
-          value={Math.round(scale * 100)}
-          min={50}
-          max={100}
-          step={1}
-          unit="%"
-          onChange={(v) => onScaleChange(v / 100)}
-        />
+        <div>
+          <label className="text-xs text-muted-foreground">Size</label>
+          <div className="mt-2">
+            <div className="flex gap-2 flex-wrap">
+              {[50, 65, 85, 100].map((opt) => (
+                <Button
+                  key={opt}
+                  size="sm"
+                  variant={Math.round(scale * 100) === opt ? 'default' : 'secondary'}
+                  onClick={() => onScaleChange(opt / 100)}
+                  className="px-3"
+                >
+                  {opt}%
+                </Button>
+              ))}
+            </div>
+
+            <div className="mt-2">
+              <label className="text-xs text-muted-foreground">Custom size</label>
+              <div className="mt-1 flex items-center gap-2">
+                <Input
+                  type="number"
+                  placeholder="Custom %"
+                  value={customSizeInput}
+                  onChange={(e) => setCustomSizeInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') applyCustomSize() }}
+                  onBlur={applyCustomSize}
+                  className="h-7 w-28 text-sm"
+                  aria-label="Custom size percent"
+                />
+                <span className="text-xs text-muted-foreground">%</span>
+                <p className="text-xs text-muted-foreground ml-2">(Enter % and press Enter)</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <input

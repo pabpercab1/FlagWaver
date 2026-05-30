@@ -40,7 +40,9 @@ function ScrollBar({
       className={cn(
         'flex touch-none p-px transition-colors select-none',
         orientation === 'vertical' &&
-          'h-full w-2.5 border-l border-l-transparent',
+          // position the vertical scrollbar absolutely at the right edge of the scroll area
+          // so it occupies the reserved padding (pr-6) inside the panel instead of overlapping content
+          'absolute right-0 top-0 bottom-0 h-full w-2.5 border-l border-l-transparent z-10',
         orientation === 'horizontal' &&
           'h-2.5 flex-col border-t border-t-transparent',
         className,

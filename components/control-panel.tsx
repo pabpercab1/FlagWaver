@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useId, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -160,6 +160,13 @@ export function ControlPanel({
 }: ControlPanelProps) {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [newPresetName, setNewPresetName] = useState('')
+  const [windPaused, setWindPaused] = useState(false)
+  const [savedWindSpeed, setSavedWindSpeed] = useState<number | null>(null)
+
+  useEffect(() => {
+    // if params.windSpeed changed externally while we had a saved value and we're not paused, clear saved
+    if (!windPaused) setSavedWindSpeed(null)
+  }, [windPaused, params.windSpeed])
 
   const handlePresetChange = useCallback((value: string) => {
     const allPresets = [...CLOTH_PRESETS, ...userPresets]
@@ -193,8 +200,8 @@ export function ControlPanel({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0">
-        <div className="p-4 space-y-6">
+      <ScrollArea className="flex-1 min-h-0 overflow-hidden pr-4">
+        <div className="space-y-6 border-r border-border pl-4 pt-4 pb-4">
           <div className="flex gap-2">
             <Button
               variant={isPaused ? 'default' : 'secondary'}
@@ -448,15 +455,46 @@ export function ControlPanel({
             </TabsList>
 
             <TabsContent value="wind" className="space-y-4 mt-4">
-              <SliderControl
-                label="Wind Speed"
-                value={params.windSpeed}
-                min={0}
-                max={20}
-                step={0.1}
-                unit="m/s"
-                onChange={(v) => onParamsChange({ windSpeed: v })}
-              />
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <SliderControl
+                    label="Wind Speed"
+                    value={windPaused ? (savedWindSpeed ?? params.windSpeed) : params.windSpeed}
+                    min={0}
+                    max={20}
+                    step={0.1}
+                    unit="m/s"
+                    onChange={(v) => {
+                      if (windPaused) {
+                        setSavedWindSpeed(v)
+                      } else {
+                        onParamsChange({ windSpeed: v })
+                      }
+                    }}
+                  />
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <Button
+                    size="sm"
+                    variant={windPaused ? 'default' : 'outline'}
+                    onClick={() => {
+                      if (!windPaused) {
+                        // pause: save current and set speed to 0
+                        setSavedWindSpeed(params.windSpeed)
+                        onParamsChange({ windSpeed: 0 })
+                        setWindPaused(true)
+                      } else {
+                        // resume: restore saved
+                        onParamsChange({ windSpeed: savedWindSpeed ?? params.windSpeed })
+                        setSavedWindSpeed(null)
+                        setWindPaused(false)
+                      }
+                    }}
+                  >
+                    {windPaused ? 'Resume' : 'Pause'}
+                  </Button>
+                </div>
+              </div>
               <SliderControl
                 label="Wind Direction"
                 value={(params.windDirection * 180) / Math.PI}
