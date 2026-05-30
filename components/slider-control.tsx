@@ -7,7 +7,7 @@ import { useState, useCallback, useEffect } from 'react'
 
 interface SliderControlProps {
   label: string
-  value: number
+  value?: number
   min: number
   max: number
   step: number
@@ -28,12 +28,14 @@ export function SliderControl({
   unit = '',
   onChange
 }: SliderControlProps) {
-  const [inputValue, setInputValue] = useState(value.toString())
+  const safeValue = typeof value === 'number' ? value : min
+  const [inputValue, setInputValue] = useState(String(safeValue))
 
   // Sync input when external value changes
   useEffect(() => {
-    setInputValue(value.toFixed(step < 1 ? 2 : 0))
-  }, [value, step])
+    const v = typeof value === 'number' ? value : min
+    setInputValue(v.toFixed(step < 1 ? 2 : 0))
+  }, [value, step, min])
 
   const handleSliderChange = useCallback((values: number[]) => {
     const newValue = values[0]
@@ -47,7 +49,7 @@ export function SliderControl({
   const handleInputBlur = useCallback(() => {
     let newValue = parseFloat(inputValue)
     if (isNaN(newValue)) {
-      newValue = value
+      newValue = typeof value === 'number' ? value : min
     }
     // Clamp to valid range
     newValue = Math.max(min, Math.min(max, newValue))
@@ -78,7 +80,7 @@ export function SliderControl({
         </div>
       </div>
       <Slider
-        value={[value]}
+        value={[safeValue]}
         min={min}
         max={max}
         step={step}
