@@ -45,7 +45,7 @@ export function useFlagSimulation() {
   const [primaryFlagPosition, setPrimaryFlagPosition] = useState<FlagPosition>('raised')
   const [secondaryFlagPosition, setSecondaryFlagPosition] = useState<FlagPosition>('raised')
   const [tertiaryFlagPosition, setTertiaryFlagPosition] = useState<FlagPosition>('raised')
-  const [raiseDuration, setRaiseDuration] = useState(3) // seconds
+  const [raiseDuration, setRaiseDuration] = useState(6) // seconds
   const [primaryRaiseCommand, setPrimaryRaiseCommand] = useState<FlagPositionCommand | null>(null)
   const [secondaryRaiseCommand, setSecondaryRaiseCommand] = useState<FlagPositionCommand | null>(null)
   const [tertiaryRaiseCommand, setTertiaryRaiseCommand] = useState<FlagPositionCommand | null>(null)
@@ -178,8 +178,7 @@ export function useFlagSimulation() {
       }
     } else {
       clearImage()
-      const placeholder = createPlaceholderTexture()
-      setTextureUrl(placeholder)
+      setTextureUrl(null)
       applyImageAspectRatio(3, 2)
     }
   }, [applyImageAspectRatio])
