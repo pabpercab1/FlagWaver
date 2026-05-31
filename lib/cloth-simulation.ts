@@ -191,6 +191,13 @@ function clamp01(v: number): number {
 
 export class ClothSimulation {
   params: ClothParams
+  
+  // --- Adaptive collision distance for anisotropic grids ------------------
+  // When width != height with fixed segmentation, particle spacing becomes
+  // anisotropic. We compute the effective collision distance based on the
+  // minimum particle spacing to prevent over-aggressive collisions in the
+  // direction with tighter spacing.
+  private effectiveSelfCollisionDistance: number = 0
 
   // --- Particle data (flat typed arrays) -----------------------------------
   private pos!:     Float32Array
@@ -290,8 +297,41 @@ export class ClothSimulation {
     this.allocateBuffers()
     this.initParticles()
     this.initConstraints()
+    this.computeEffectiveCollisionDistance()
   }
 
+  // --- Adaptive collision distance for anisotropic particle grids ----------
+  /**
+   * Computes the effective self-collision distance accounting for the cloth's
+   * actual particle spacing. When width != height with fixed segmentation
+   * (70x47), the particle grid becomes anisotropic. The collision distance is
+   * scaled relative to the *minimum* particle spacing to prevent aggressive
+   * over-collisions in the direction with tighter spacing.
+   *
+   * Example: 3x2 flag (default) has nearly isotropic spacing (~0.043 in both
+   * directions). A 2x2 flag has 0.0286 in X and 0.0426 in Y—X becomes
+   * compressed. The collision distance is adjusted to remain proportional to
+   * the tightest axis.
+   */
+  private computeEffectiveCollisionDistance(): void {
+    const { width, height, segmentsX, segmentsY } = this.params
+    
+    // Compute particle cell dimensions
+    const cellX = width / segmentsX
+    const cellY = height / segmentsY
+    const minCellSize = Math.min(cellX, cellY)
+    
+    // Compute the reference cell size from the default 3x2 flag
+    // (which was used to calibrate the default 0.17 collision distance)
+    const refCellX = 3.0 / 70
+    const refCellY = 2.0 / 47
+    const refMinCellSize = Math.min(refCellX, refCellY)
+    
+    // Scale the collision distance proportionally to the actual cell size
+    const cellSizeRatio = minCellSize / refMinCellSize
+    this.effectiveSelfCollisionDistance = this.params.selfCollisionDistance * cellSizeRatio
+  }
+  
   // --- offsets -------------------------------------------------------------
   private getRaisedOffset(): number {
     return getPoleHeight(this.params.height) - this.params.height - FLAG_TOP_CLEARANCE
@@ -972,7 +1012,7 @@ export class ClothSimulation {
    * each other on the next frame.
    */
   private applySelfCollision(): void {
-    const sdc = this.params.selfCollisionDistance
+    const sdc = this.effectiveSelfCollisionDistance
     if (sdc <= 0) return
 
     const pos    = this.pos
@@ -1170,6 +1210,7 @@ export class ClothSimulation {
     for (let i = 0; i < this.particleCount; i++) {
       if (!this.pinned[i]) this.invMass[i] = imm
     }
+    this.computeEffectiveCollisionDistance()
   }
 
   setFlagPosition(position: FlagPosition, duration: number): void {
@@ -1223,6 +1264,7 @@ export class ClothSimulation {
     this.allocateBuffers()
     this.initParticles()
     this.initConstraints()
+    this.computeEffectiveCollisionDistance()
   }
 
   getPositions(): Float32Array { return this.pos }
