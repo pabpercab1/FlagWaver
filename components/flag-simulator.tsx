@@ -130,8 +130,7 @@ export function FlagSimulator() {
             if (slot === 'primary') handleImageChange(processed)
             if (slot === 'secondary') handleSecondImageChange(processed)
             if (slot === 'tertiary') handleThirdImageChange(processed)
-            versionRef.current += 1
-            bcRef.current?.postMessage({ type: 'state', version: versionRef.current, payload: { params, isPaused } })
+            broadcastState()
             }).catch(() => {})
         } else if (msg.processedImage) {
           const processed: ProcessedImage = msg.processedImage
@@ -233,7 +232,7 @@ export function FlagSimulator() {
   // Broadcast state updates to any aux windows
   useEffect(() => {
     broadcastState()
-  }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration])
+  }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration, textureUrl, secondTextureUrl, thirdTextureUrl])
 
   // Expose state getter function on window for aux window to call directly
   useEffect(() => {
