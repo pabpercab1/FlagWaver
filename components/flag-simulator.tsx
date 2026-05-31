@@ -72,8 +72,9 @@ export function FlagSimulator() {
 
   function openAuxWindow() {
     try {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
       const features = 'width=900,height=700,toolbar=no,menubar=no,location=no,status=no,resizable=yes,scrollbars=yes'
-      const w = window.open('/aux-controls', 'FlagWaverControls', features)
+      const w = window.open(`${basePath}/aux-controls`, 'FlagWaverControls', features)
       if (w) auxWindowRef.current = w
     } catch (e) {
       console.warn('Failed to open aux window', e)
@@ -233,6 +234,31 @@ export function FlagSimulator() {
   useEffect(() => {
     broadcastState()
   }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration])
+
+  // Expose state getter function on window for aux window to call directly
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).getFlagWaverState = () => ({
+        params,
+        isPaused,
+        isSecondPoleEnabled,
+        isThirdPoleEnabled,
+        primaryScale,
+        secondaryScale,
+        tertiaryScale,
+        primaryFlagPosition,
+        secondaryFlagPosition,
+        tertiaryFlagPosition,
+        raiseDuration,
+        textureUrl,
+        secondTextureUrl,
+        thirdTextureUrl,
+        secondPoleDistance,
+        selectedPreset,
+        userPresets
+      })
+    }
+  }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration, textureUrl, secondTextureUrl, thirdTextureUrl, secondPoleDistance, selectedPreset, userPresets])
 
   if (!isInitialized) {
     return (

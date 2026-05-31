@@ -24,6 +24,25 @@ export default function AuxControlsPage() {
   const [secondTextureUrl, setSecondTextureUrl] = useState<string | null>(null)
   const [thirdTextureUrl, setThirdTextureUrl] = useState<string | null>(null)
 
+  // Helper to apply state from payload
+  const applyState = (s: any) => {
+    if (s.params) setParams(s.params)
+    if (typeof s.isPaused === 'boolean') setIsPaused(s.isPaused)
+    if (typeof s.isSecondPoleEnabled === 'boolean') setIsSecondPoleEnabled(s.isSecondPoleEnabled)
+    if (typeof s.isThirdPoleEnabled === 'boolean') setIsThirdPoleEnabled(s.isThirdPoleEnabled)
+    if (typeof s.primaryScale === 'number') setPrimaryScale(s.primaryScale)
+    if (typeof s.secondaryScale === 'number') setSecondaryScale(s.secondaryScale)
+    if (typeof s.tertiaryScale === 'number') setTertiaryScale(s.tertiaryScale)
+    if (s.primaryFlagPosition) setPrimaryFlagPosition(s.primaryFlagPosition)
+    if (s.secondaryFlagPosition) setSecondaryFlagPosition(s.secondaryFlagPosition)
+    if (s.tertiaryFlagPosition) setTertiaryFlagPosition(s.tertiaryFlagPosition)
+    if (typeof s.raiseDuration === 'number') setRaiseDuration(s.raiseDuration)
+    if (typeof s.textureUrl === 'string') setTextureUrl(s.textureUrl)
+    if (typeof s.secondTextureUrl === 'string') setSecondTextureUrl(s.secondTextureUrl)
+    if (typeof s.thirdTextureUrl === 'string') setThirdTextureUrl(s.thirdTextureUrl)
+    setReady(true)
+  }
+
   useEffect(() => {
     if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return
     const bc = new BroadcastChannel('flag-controls')
@@ -33,41 +52,55 @@ export default function AuxControlsPage() {
       const msg = ev.data
       if (!msg || typeof msg !== 'object') return
 
-        if (msg.type === 'state' && msg.payload) {
+      if (msg.type === 'state' && msg.payload) {
         // version check
         if (typeof msg.version === 'number' && msg.version <= versionRef.current) return
         if (typeof msg.version === 'number') versionRef.current = msg.version
-
-        const s = msg.payload
-        if (s.params) setParams(s.params)
-        if (typeof s.isPaused === 'boolean') setIsPaused(s.isPaused)
-        if (typeof s.isSecondPoleEnabled === 'boolean') setIsSecondPoleEnabled(s.isSecondPoleEnabled)
-        if (typeof s.isThirdPoleEnabled === 'boolean') setIsThirdPoleEnabled(s.isThirdPoleEnabled)
-        if (typeof s.primaryScale === 'number') setPrimaryScale(s.primaryScale)
-        if (typeof s.secondaryScale === 'number') setSecondaryScale(s.secondaryScale)
-        if (typeof s.tertiaryScale === 'number') setTertiaryScale(s.tertiaryScale)
-        if (s.primaryFlagPosition) setPrimaryFlagPosition(s.primaryFlagPosition)
-        if (s.secondaryFlagPosition) setSecondaryFlagPosition(s.secondaryFlagPosition)
-        if (s.tertiaryFlagPosition) setTertiaryFlagPosition(s.tertiaryFlagPosition)
-        if (typeof s.raiseDuration === 'number') setRaiseDuration(s.raiseDuration)
-          if (typeof s.textureUrl === 'string') setTextureUrl(s.textureUrl)
-          if (typeof s.secondTextureUrl === 'string') setSecondTextureUrl(s.secondTextureUrl)
-          if (typeof s.thirdTextureUrl === 'string') setThirdTextureUrl(s.thirdTextureUrl)
-        setReady(true)
+        applyState(msg.payload)
       }
     }
 
-    // request initial state from main window
-    try {
-      bc.postMessage({ type: 'requestInit' })
-    } catch (e) {
-      // ignore
+    // Try to get initial state from opener (main window)
+    const getInitialState = async () => {
+      try {
+        if (window.opener && typeof window.opener.getFlagWaverState === 'function') {
+          const state = window.opener.getFlagWaverState()
+          if (state && typeof state === 'object') {
+            applyState(state)
+            return
+          }
+        }
+      } catch (e) {
+        // ignore CORS/access errors
+      }
+
+      // Fallback: request initial state via BroadcastChannel
+      try {
+        bc.postMessage({ type: 'requestInit' })
+        // Set a timeout to ensure we mark as ready even if no response
+        const timeout = setTimeout(() => {
+          if (!ready) setReady(true)
+        }, 1000)
+        return () => clearTimeout(timeout)
+      } catch (e) {
+        // ignore
+      }
     }
+
+    getInitialState()
 
     return () => {
       try { bc.close() } catch (e) {}
       bcRef.current = null
     }
+  }, [])
+
+  // Add a timeout safety net to ensure the aux window shows content even if state sync fails
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setReady(true)
+    }, 2000)
+    return () => clearTimeout(timeout)
   }, [])
 
   // wrapper handlers send commands to the main window via BroadcastChannel

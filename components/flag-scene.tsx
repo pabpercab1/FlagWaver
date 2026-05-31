@@ -390,7 +390,7 @@ export function FlagScene({
         minDistance={2}
         maxDistance={15}
         minPolarAngle={0.1}
-        maxPolarAngle={Math.PI / 2 - 0.1}
+        maxPolarAngle={Math.PI - 0.1}
         target={initialView.target}
       />
     </Canvas>
