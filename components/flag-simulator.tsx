@@ -61,7 +61,10 @@ export function FlagSimulator() {
     updatePrimaryScale,
     updateSecondaryScale,
     updateTertiaryScale,
-    updateRaiseDuration
+    updateRaiseDuration,
+    setPrimaryFlagPositionWithDuration,
+    setSecondaryFlagPositionWithDuration,
+    setTertiaryFlagPositionWithDuration
   } = useFlagSimulation()
 
   const [panelOpen, setPanelOpen] = useState(true)
@@ -201,13 +204,25 @@ export function FlagSimulator() {
             updateTertiaryScale(payload)
             break
           case 'setPrimaryFlagPosition':
-            setPrimaryFlagPosition(payload)
+            if (payload?.duration) {
+              setPrimaryFlagPositionWithDuration(payload.pos || payload, payload.duration)
+            } else {
+              setPrimaryFlagPosition(payload)
+            }
             break
           case 'setSecondaryFlagPosition':
-            setSecondaryFlagPosition(payload)
+            if (payload?.duration) {
+              setSecondaryFlagPositionWithDuration(payload.pos || payload, payload.duration)
+            } else {
+              setSecondaryFlagPosition(payload)
+            }
             break
           case 'setTertiaryFlagPosition':
-            setTertiaryFlagPosition(payload)
+            if (payload?.duration) {
+              setTertiaryFlagPositionWithDuration(payload.pos || payload, payload.duration)
+            } else {
+              setTertiaryFlagPosition(payload)
+            }
             break
           case 'setRaiseDuration':
             updateRaiseDuration(payload)

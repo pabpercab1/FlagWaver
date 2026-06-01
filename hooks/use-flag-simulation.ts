@@ -317,6 +317,22 @@ export function useFlagSimulation() {
     setRaiseDuration(duration)
   }, [])
 
+  // Handlers for setting flag position with explicit duration (used by aux panel commands)
+  const setPrimaryFlagPositionWithDuration = useCallback((position: FlagPosition, duration: number) => {
+    setPrimaryFlagPosition(position)
+    setPrimaryRaiseCommand({ position, duration, trigger: Date.now() })
+  }, [])
+
+  const setSecondaryFlagPositionWithDuration = useCallback((position: FlagPosition, duration: number) => {
+    setSecondaryFlagPosition(position)
+    setSecondaryRaiseCommand({ position, duration, trigger: Date.now() })
+  }, [])
+
+  const setTertiaryFlagPositionWithDuration = useCallback((position: FlagPosition, duration: number) => {
+    setTertiaryFlagPosition(position)
+    setTertiaryRaiseCommand({ position, duration, trigger: Date.now() })
+  }, [])
+
   // Per-flag width override for the secondary flag (height * its own aspect),
   // or null when no secondary image has been chosen.
   const secondaryWidth = secondaryAspect != null
@@ -364,6 +380,9 @@ export function useFlagSimulation() {
     setPrimaryFlagPosition: setPrimaryFlagPositionAndRaise,
     setSecondaryFlagPosition: setSecondaryFlagPositionAndRaise,
     setTertiaryFlagPosition: setTertiaryFlagPositionAndRaise,
+    setPrimaryFlagPositionWithDuration,
+    setSecondaryFlagPositionWithDuration,
+    setTertiaryFlagPositionWithDuration,
     toggleSecondPoleEnabled,
     toggleThirdPoleEnabled,
     updateSecondPoleDistance,

@@ -66,6 +66,9 @@ export interface ClothParams {
   // floor collision land at the same world Y as a full-size flag instead of
   // tracking the shrunken cloth-local extents. Defaults to `height`.
   fullHeight?: number
+  // Random seed for initial particle perturbations. Each flag instance should
+  // use a unique seed so identically-sized flags don't wave in sync. Defaults to 0xC10C0.
+  seed?: number
 }
 
 export interface ClothPreset {
@@ -111,6 +114,7 @@ export const DEFAULT_PARAMS: ClothParams = {
   // Default self-collision distance: set to minimum 0.02 when collisions are enabled
   // for tighter contact detection.
   selfCollisionDistance: 0.02,
+  seed: 0xC10C0,
 }
 
 export const POLE_EXTRA_HEIGHT = 2.0
@@ -379,10 +383,10 @@ export class ClothSimulation {
   }
 
   private initParticles(): void {
-    const { width, height, segmentsX, segmentsY } = this.params
+    const { width, height, segmentsX, segmentsY, seed } = this.params
     const m   = this.computeParticleMass()
     const imm = 1 / m
-    const rng = mulberry32(0xC10C0)
+    const rng = mulberry32(seed ?? 0xC10C0)
 
     let i = 0
     for (let y = 0; y <= segmentsY; y++) {

@@ -273,6 +273,7 @@ export function FlagScene({
                         selfCollisionDistance: params.selfCollisionDistance * primaryScale,
                         fullHeight: params.height,
                         worldYOffset: primaryGroupY,
+                        seed: 1,
                         extraPoles
                       }
                     : {
@@ -282,7 +283,8 @@ export function FlagScene({
                         poleRadius: scaledPoleRadius,
                         selfCollisionDistance: params.selfCollisionDistance * primaryScale,
                         fullHeight: params.height,
-                        worldYOffset: primaryGroupY
+                        worldYOffset: primaryGroupY,
+                        seed: 1
                       }
                 })()}
                 textureUrl={textureUrl}
@@ -321,6 +323,7 @@ export function FlagScene({
                       selfCollisionDistance: params.selfCollisionDistance * secondaryScale,
                       fullHeight: params.height,
                       worldYOffset: secondaryGroupY,
+                      seed: 2,
                       extraPoles
                     }}
                     textureUrl={secondTextureUrl}
@@ -360,6 +363,7 @@ export function FlagScene({
                       selfCollisionDistance: params.selfCollisionDistance * tertiaryScale,
                       fullHeight: params.height,
                       worldYOffset: tertiaryGroupY,
+                      seed: 3,
                       extraPoles
                     }}
                     textureUrl={thirdTextureUrl}

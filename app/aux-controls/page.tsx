@@ -119,9 +119,9 @@ export default function AuxControlsPage() {
   const handlePrimaryScale = (v: number) => post('setPrimaryScale', v)
   const handleSecondaryScale = (v: number) => post('setSecondaryScale', v)
   const handleTertiaryScale = (v: number) => post('setTertiaryScale', v)
-  const handlePrimaryFlagPosition = (pos: FlagPosition) => post('setPrimaryFlagPosition', pos)
-  const handleSecondaryFlagPosition = (pos: FlagPosition) => post('setSecondaryFlagPosition', pos)
-  const handleTertiaryFlagPosition = (pos: FlagPosition) => post('setTertiaryFlagPosition', pos)
+  const handlePrimaryFlagPosition = (pos: FlagPosition) => post('setPrimaryFlagPosition', { pos, duration: raiseDuration })
+  const handleSecondaryFlagPosition = (pos: FlagPosition) => post('setSecondaryFlagPosition', { pos, duration: raiseDuration })
+  const handleTertiaryFlagPosition = (pos: FlagPosition) => post('setTertiaryFlagPosition', { pos, duration: raiseDuration })
   const handleRaiseDuration = (v: number) => post('setRaiseDuration', v)
 
   // Image sending: try postMessage to opener with Blob, fallback to BroadcastChannel with processedImage
