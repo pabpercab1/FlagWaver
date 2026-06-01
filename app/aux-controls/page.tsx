@@ -16,6 +16,7 @@ export default function AuxControlsPage() {
   const [primaryScale, setPrimaryScale] = useState(1)
   const [secondaryScale, setSecondaryScale] = useState(1)
   const [tertiaryScale, setTertiaryScale] = useState(1)
+  const [secondPoleDistance, setSecondPoleDistance] = useState(2)
   const [primaryFlagPosition, setPrimaryFlagPosition] = useState<FlagPosition>('raised')
   const [secondaryFlagPosition, setSecondaryFlagPosition] = useState<FlagPosition>('raised')
   const [tertiaryFlagPosition, setTertiaryFlagPosition] = useState<FlagPosition>('raised')
@@ -33,6 +34,7 @@ export default function AuxControlsPage() {
     if (typeof s.primaryScale === 'number') setPrimaryScale(s.primaryScale)
     if (typeof s.secondaryScale === 'number') setSecondaryScale(s.secondaryScale)
     if (typeof s.tertiaryScale === 'number') setTertiaryScale(s.tertiaryScale)
+    if (typeof s.secondPoleDistance === 'number') setSecondPoleDistance(s.secondPoleDistance)
     if (s.primaryFlagPosition) setPrimaryFlagPosition(s.primaryFlagPosition)
     if (s.secondaryFlagPosition) setSecondaryFlagPosition(s.secondaryFlagPosition)
     if (s.tertiaryFlagPosition) setTertiaryFlagPosition(s.tertiaryFlagPosition)
@@ -185,7 +187,7 @@ export default function AuxControlsPage() {
             onLoadPreset={() => {}}
             isSecondPoleEnabled={isSecondPoleEnabled}
             isThirdPoleEnabled={isThirdPoleEnabled}
-            secondPoleDistance={1}
+            secondPoleDistance={secondPoleDistance}
             onSecondPoleToggle={handleSecondPoleToggle}
             onThirdPoleToggle={handleThirdPoleToggle}
             onSecondPoleDistanceChange={(v) => post('setSecondPoleDistance', v)}

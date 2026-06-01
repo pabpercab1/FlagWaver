@@ -212,6 +212,9 @@ export function FlagSimulator() {
           case 'setRaiseDuration':
             updateRaiseDuration(payload)
             break
+          case 'setSecondPoleDistance':
+            updateSecondPoleDistance(payload)
+            break
           default:
             break
         }
@@ -232,7 +235,7 @@ export function FlagSimulator() {
   // Broadcast state updates to any aux windows
   useEffect(() => {
     broadcastState()
-  }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration, textureUrl, secondTextureUrl, thirdTextureUrl])
+  }, [params, isPaused, isSecondPoleEnabled, isThirdPoleEnabled, secondPoleDistance, primaryScale, secondaryScale, tertiaryScale, primaryFlagPosition, secondaryFlagPosition, tertiaryFlagPosition, raiseDuration, textureUrl, secondTextureUrl, thirdTextureUrl])
 
   // Expose state getter function on window for aux window to call directly
   useEffect(() => {

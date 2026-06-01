@@ -29,7 +29,7 @@ export function useFlagSimulation() {
   const [tertiaryAspect, setTertiaryAspect] = useState<number | null>(null)
   const [isPaused, setIsPaused] = useState(false)
   const [resetTrigger, setResetTrigger] = useState(0)
-  const [selectedPreset, setSelectedPreset] = useState<string | null>('Polyester')
+  const [selectedPreset, setSelectedPreset] = useState<string | null>('Nylon')
   const [userPresets, setUserPresets] = useState<ClothPreset[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSecondPoleEnabled, setIsSecondPoleEnabled] = useState(false)
@@ -91,7 +91,7 @@ export function useFlagSimulation() {
       setTertiaryScale(savedSettings.tertiaryScale ?? 1)
     } else {
       // Apply default preset
-      const defaultPreset = CLOTH_PRESETS.find(p => p.name === 'Polyester')
+      const defaultPreset = CLOTH_PRESETS.find(p => p.name === 'Nylon')
       if (defaultPreset) {
         setParams(prev => ({ ...prev, ...defaultPreset.params }))
       }

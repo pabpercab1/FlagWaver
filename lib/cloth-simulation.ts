@@ -108,10 +108,9 @@ export const DEFAULT_PARAMS: ClothParams = {
   // the cloth body can actually wrap and rest against it instead of clipping
   // through. Tune via the control panel for thicker poles.
   poleRadius: 0.08,
-  // Default self-collision distance: bumped above ~half the typical particle
-  // spacing so a soft drape (where two layers approach gently) actually
-  // registers contacts before they cross.
-  selfCollisionDistance: 0.17,
+  // Default self-collision distance: set to minimum 0.02 when collisions are enabled
+  // for tighter contact detection.
+  selfCollisionDistance: 0.02,
 }
 
 export const POLE_EXTRA_HEIGHT = 2.0
